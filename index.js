@@ -4,7 +4,12 @@ const cors = require('cors')
 const app = express();
 app.use(cors())
 
+// middleware that parses incoming requests with JSON payloads.
+app.use(express.json())
+
 const PORT = 3001;
+
+app.use('/auth', authRouter);
 
 app.listen(PORT, (err) => {
     if (err) {
