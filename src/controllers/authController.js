@@ -21,11 +21,11 @@ const getJsonWebToken = async (email, id) => {
 const register = asyncHandle(async (req, res) => {
     // console.log(req.body) //to see what user send to backend from front end
 
-    const {email, fullName, password} = res.body;
+    const { email, fullName, password } = res.body;
 
-    const existingUser = await UserModel.findOne({email});
+    const existingUser = await UserModel.findOne({ email });
 
-    if (existingUser){
+    if (existingUser) {
         // return right away as res.status
         res.status(401)
         throw new Error('User has already existed!')
@@ -48,12 +48,47 @@ const register = asyncHandle(async (req, res) => {
     res.status(200).json({
         message: "Registered successfully",
         data: {
-            ...newUser,
+            email: newUser.email,
+            id: newUser.id,
             accessToken: await getJsonWebToken(email, newUser.id),
         },
     })
 })
 
+const login = asyncHandle(async (req, res) => {
+
+    // console.log(req.body)
+    const {email, password} = req.body;
+
+    const existingUser = await UserModel.findOne({ email });
+
+    if (!existingUser){
+        res.status(403)
+        throw new Error('User not found')
+        // return next(new Error('User not found')) pass to next errorHandler
+    }
+
+    const isMatchPassword = await bcrypt.compare(password, existingUser.password)
+
+    if (!isMatchPassword){
+        res.status(401)
+        throw new Error('email or password is not correct!')
+    }
+
+    res.status(200).json({
+        message: 'Login successfully',
+        data: {
+            id: existingUser.id,
+            email: existingUser.email,
+            accessToken: await getJsonWebToken(email, existingUser.id)
+        }
+    })
+
+    // res.send something so front end can process
+    // res.send('fafa')
+})
+
 module.exports = {
     register,
+    login,
 }
