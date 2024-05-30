@@ -4,6 +4,17 @@ const jwt = require('jsonwebtoken')
 // primary purpose is to simplify error handling in asynchronous route handlers and
 // middleware by automatically catching errors and passing them to the next middleware function.
 const asyncHandle = require('express-async-handler')
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+
+const transporter = nodemailer.createTransport({
+	host: 'smtp.gmail.com',
+	port: 587,
+	auth: {
+		user: process.env.USERNAME_EMAIL,
+		pass: process.env.PASSWORD_EMAIL,
+	},
+});
 
 const getJsonWebToken = async (email, id) => {
     // console.log(email, id);
@@ -17,6 +28,44 @@ const getJsonWebToken = async (email, id) => {
 
     return token;
 }
+
+const handleSendMail = async (val) => {
+	try {
+		await transporter.sendMail(val);
+
+		return 'OK';
+	} catch (error) {
+		return error;
+	}
+};
+
+const verification = asyncHandle(async (req, res) => {
+	const { email } = req.body;
+
+	const verificationCode = Math.round(1000 + Math.random() * 9000);
+
+	try {
+		const data = {
+			from: `"Support EventHub Appplication" <${process.env.USERNAME_EMAIL}>`,
+			to: email,
+			subject: 'Verification email code',
+			text: 'Your code to verification email',
+			html: `<h1>${verificationCode}</h1>`,
+		};
+
+		await handleSendMail(data);
+
+		res.status(200).json({
+			message: 'Send verification code successfully!!!',
+			data: {
+				code: verificationCode,
+			},
+		});
+	} catch (error) {
+		res.status(401);
+		throw new Error('Can not send email');
+	}
+});
 
 const register = asyncHandle(async (req, res) => {
     // console.log(req.body) //to see what user send to backend from front end
@@ -91,4 +140,5 @@ const login = asyncHandle(async (req, res) => {
 module.exports = {
     register,
     login,
+    verification,
 }
