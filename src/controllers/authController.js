@@ -221,6 +221,7 @@ const handleSigninWithGoogle = asyncHandle(async(req, res) => {
 		});
 		await newUser.save();
 		user = { ...newUser };
+
 		user.accesstoken = await getJsonWebToken(userInfo.email, newUser.id);
 
 		if (user) {
