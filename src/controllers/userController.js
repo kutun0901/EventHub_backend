@@ -1,4 +1,4 @@
-
+const asyncHandle = require('express-async-handler')
 
 const getAllUsers = asyncHandle(async (req, res) => {
 	const users = await UserModel.find({});
