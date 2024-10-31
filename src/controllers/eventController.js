@@ -18,6 +18,18 @@ const addNewEvent = asyncHandle(async (req, res) => {
 	}
 });
 
+const getEventById = asyncHandle(async (req, res) => {
+	const { id } = req.query;
+
+	const item = await EventModel.findById(id);
+
+	res.status(200).json({
+		message: 'Event detail',
+		data: item ? item : [],
+	});
+});
+
 module.exports = {
 	addNewEvent,
+	getEventById
 };
