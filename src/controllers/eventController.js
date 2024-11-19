@@ -19,6 +19,8 @@ const calcDistanceLocation = ({
 	return r * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 };
 
+const toRoad = (val) => (val * Math.PI) / 180;
+
 const addNewEvent = asyncHandle(async (req, res) => {
 	const body = req.body;
 
@@ -60,7 +62,7 @@ const getEvents = asyncHandle(async (req, res) => {
 		if (events.length > 0) {
 			events.forEach((event) => {
 				const eventDistance = calcDistanceLocation({
-					curentLong: long,
+					currentLong: long,
 					currentLat: lat,
 					addressLat: event.position.lat,
 					addressLong: event.position.long,
@@ -88,8 +90,22 @@ const getEvents = asyncHandle(async (req, res) => {
 	}
 });
 
+const updateFollowers = asyncHandle(async (req, res) => {
+	const body = req.body;
+	const { id, followers } = body;
+
+	await EventModel.findByIdAndUpdate(id, { followers, updatedAt: Date.now() });
+
+	res.status(200).json({
+		mess: 'Update followers successfully!',
+		data: [],
+	});
+});
+
 module.exports = {
 	addNewEvent,
 	getEventById,
-	getEvents
+	getEvents,
+	updateFollowers,
+
 };
