@@ -102,10 +102,26 @@ const updateFollowers = asyncHandle(async (req, res) => {
 	});
 });
 
+const getFollowers = asyncHandle(async (req, res) => {
+	const { id } = req.query;
+
+	const event = await EventModel.findById(id);
+
+	if (event) {
+		res.status(200).json({
+			mess: 'Followers',
+			data: event.followers ?? [],
+		});
+	} else {
+		res.status(401);
+		throw new Error('Event not found');
+	}
+});
+
 module.exports = {
 	addNewEvent,
 	getEventById,
 	getEvents,
 	updateFollowers,
-
+	getFollowers,
 };
