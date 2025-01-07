@@ -18,7 +18,28 @@ const getAllUsers = asyncHandle(async (req, res) => {
 	});
 });
 
+const getEventsFollowed = asyncHandle(async (req, res) => {
+	const { uid } = req.query;
+
+	if (uid) {
+		const events = await EventModel.find({ followers: { $all: uid } });
+
+		const ids = [];
+
+		events.forEach((event) => ids.push(event.id));
+
+		res.status(200).json({
+			message: 'fafa',
+			data: ids,
+		});
+	} else {
+		res.sendStatus(401);
+		throw new Error('Missing uid');
+	}
+});
+
 
 module.exports = {
 	getAllUsers,
+	getEventsFollowed,
 };
