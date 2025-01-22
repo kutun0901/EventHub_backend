@@ -38,8 +38,23 @@ const getEventsFollowed = asyncHandle(async (req, res) => {
 	}
 });
 
+const updateFcmToken = asyncHandle(async (req, res) => {
+	const { uid, fcmTokens } = req.body;
+
+	await UserModel.findByIdAndUpdate(uid, {
+		fcmTokens,
+	});
+
+	res.status(200).json({
+		message: 'Fcmtoken updated',
+		data: [],
+	});
+});
+
 
 module.exports = {
 	getAllUsers,
 	getEventsFollowed,
+	updateFcmToken,
+
 };
