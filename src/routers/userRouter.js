@@ -2,6 +2,7 @@ const Router = require('express');
 const {
 	getAllUsers,
 	getEventsFollowed,
+	updateFcmToken
 } = require('../controllers/userController')
 
 const userRouter = Router();
